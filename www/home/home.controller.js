@@ -5,17 +5,16 @@
         .module('app.home')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$scope', '$cordovaCamera', '$cordovaFile'];
+    HomeController.$inject = ['$scope', '$cordovaCamera', '$timeout'];
 
     /* @ngInject */
-    function HomeController($scope, $cordovaCamera, $cordovaFile) {
+    function HomeController($scope, $cordovaCamera, $timeout) {
         var vm = this;
 
         angular.extend(vm, {
-            title: 'HOME',
             image: '',
 
-            takeAShot: takeAShot
+            getPicture: getPicture
         });
 
         activate();
@@ -26,21 +25,22 @@
 
         }
 
-        function takeAShot() {
+        function getPicture(source) {
             var options = {
                 destinationType: Camera.DestinationType.FILE_URI,
-                sourceType: Camera.PictureSourceType.PHOTOLIBRARY, // Camera.PictureSourceType.PHOTOLIBRARY
-                // allowEdit: false,
+                sourceType: Camera.PictureSourceType[source], // Camera.PictureSourceType.PHOTOLIBRARY
+                allowEdit: true,
                 // encodingType: Camera.EncodingType.JPEG,
                 // popoverOptions: CameraPopoverOptions,
             };
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
                 vm.image = imageData;
-                console.log('LEO:::OK::' + imageData);
-                $scope.$apply();
+                $timeout(function() {
+                    $scope.$apply();
+                }, 0)
             }, function(err) {
-                console.log('LEO:::ERR::' + err);
+                console.log('::ERR::' + err);
             });
         }
     }
